@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+	<title>D3 Page Template</title>
+	<script type="text/javascript" src="../d3/d3.v3.js"></script>
+    </head>
+    <body>
+	<script type="text/javascript">
+	    // D3를 활용한 여러분의 코드가 들어갈 위치.
+
+	    var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+			    11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];	    
+
+	    // 폭과 높이
+	    var w = 600;
+	    var h = 250;
+
+	    var xScale = d3.scale.ordinal()
+			   .domain(d3.range(dataset.length))
+			   .rangeRoundBands([0, w], 0.05);
+
+	    var yScale = d3.scale.linear()
+			   .domain([0, d3.max(dataset, function(d) {
+			       return d;
+			   })])
+			   .range([0, h]);
+
+	    var sortOrder = false;
+	    
+	    var sortBars = function() {
+		// sortOrder 값을 바꿔 준다.
+		sortOrder = !sortOrder;
+		svg.selectAll("rect")
+		   .sort(function(a, b) {
+		       if (sortOrder) {
+			   return d3.ascending(a, b);
+		       } else {
+			   return d3.descending(a, b);
+		       }
+		   })
+		   .transition()
+		   .delay(function(d, i) {
+		       return i * 50;
+		   })
+		   .duration(1000)
+		   .attr("x", function(d, i) {
+		       return xScale(i);
+		   });
+	    };
+
+	    // SVG 문서요소를 생성한다.	    
+	    var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h);
+	    
+	    // 막대를 생성한다.
+	    svg.selectAll("rect")
+	       .data(dataset)
+	       .enter()
+	       .append("rect")
+	       .attr("x", function(d, i) {
+		   return xScale(i);        // <-- x 값을 지정한다.
+	       })
+	       .attr("y", function(d) {
+		   return h - yScale(d);
+	       })
+	       .attr("width", xScale.rangeBand())
+	       .attr("height", function(d) {
+		   return yScale(d);
+	       })
+	       .attr("fill", function(d) {
+		   return "rgb(0, 0, " + (d * 10) + ")";
+	       })
+	       .on("click", function() {
+		   sortBars();
+	       })
+	       .on("mouseover", function() {
+		   // 마우스를 막대에 올릴 때 해야 하는 어떤 일
+		   d3.select(this)
+		     .attr("fill", "orange");
+	       })
+	       .on("mouseout", function(d) {
+		   d3.select(this)
+		     .transition()
+		     .duration(250)
+		     .attr("fill", "rgb(0, 0, " + (d * 10) + ")");
+	       })
+	       .append("title")
+	       .text(function(d) {
+		   return d;
+	       });
+	    
+	</script>
+    </body>
+</html>
