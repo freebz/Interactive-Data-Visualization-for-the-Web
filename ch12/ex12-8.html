@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+	<title>D3 Page Template</title>
+	<script type="text/javascript" src="../d3/d3.v3.js"></script>
+    </head>
+    <body>
+	<script type="text/javascript">
+	    // D3를 활용한 여러분의 코드가 들어갈 위치.
+
+	    // Width and height
+	    var w = 500;
+	    var h = 300;
+
+	    // Define map projection
+	    var projection = d3.geo.albersUsa()
+			       .translate([w/2, h/2])
+			       .scale([500]);
+
+	    // Define path generator
+	    var path = d3.geo.path()
+			 .projection(projection);
+
+	    // Create SVG element
+	    var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h);
+
+	    // Load in GeoJSON data
+	    d3.json("oceans.json", function(json) {
+
+		// Bind data and create one path per GeoJSON feature
+		svg.selectAll("path")
+		   .data(json.features)
+		   .enter()
+		   .append("path")
+		   .attr("d", path)
+		   .style("fill", "steelblue");
+	    });
+	    
+	</script>
+    </body>
+</html>
